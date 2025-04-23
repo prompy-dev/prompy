@@ -5,7 +5,7 @@
   "scripts": {
     "py-venv": "python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt",
     "next-dev": "next dev",
-    "flask-dev": "FLASK_DEBUG=1 pip3 install -r requirements.txt && python3 -m flask --app api/wsgi:app run",
+    "flask-dev": "FLASK_DEBUG=1 python3 -m flask --app api/wsgi:app run",
     "dev": "concurrently \"npm run next-dev\" \"npm run flask-dev\"",
     "build": "next build",
     "start": "next start",
