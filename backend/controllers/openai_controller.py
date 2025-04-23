@@ -9,16 +9,30 @@ client = OpenAI(
   api_key=os.environ.get("OPEN_API_KEY")
 )
 
-@openai_bp.route("/chat", methods=["GET"])
+@openai_bp.post("/chat")
 def chat():
   try:
-    response = client.responses.create(
+
+    data = request.get_json()
+    user_query = data['prompt']
+
+    response = client.chat.completions.create(
       model="gpt-4o",
-      instructions="You are a coding assistant that talks like a pirate.",
-      input="How do I check if a Python object is an instance of a class?",
+      messages=[
+        {
+          "role": "system",
+          "content": 'You are a coding assistant that talks like a pirate.'
+        },
+        {
+          "role": "user",
+          "content": user_query
+        }
+      ]
     )
 
-    return jsonify({"response": response.output_text})
-  
+    chat_response = response.choices[0].message.content
+
+    return jsonify({"response": chat_response})
+
   except Exception as e:
     print(e)
