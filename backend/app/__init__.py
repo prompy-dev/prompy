@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, abort
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
+from controllers.openai_controller import openai_bp
 
 load_dotenv()
 
@@ -9,6 +10,9 @@ def create_app(config_class=None):
   app = Flask(__name__, instance_relative_config=False)
   app.config.from_object(config_class)
   CORS(app)
+
+  # controllers
+  app.register_blueprint(openai_bp)
 
   @app.get('/')
   @cross_origin()
