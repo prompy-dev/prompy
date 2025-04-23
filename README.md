@@ -1,23 +1,23 @@
 # Prompy
 ### An interactive prompt coach for learning.
 
-# Fronend Setup
-
-
-# Backend Setup
-
 ### Installation
 
-To start your virtual environment, navigate to `backend` and enter the following commands in your terminal to start the project and install dependencies:
+```shell
+npm i
+```
 
-First, activate your virtual environment. From the `backend` dir, enter the following in your terminal:
+### Python virtual environment
+
+```shell
+python3 -m venv venv
+```
 
 ```shell
 source venv/bin/activate
-
 ```
 
-Once activated, install all dependencies:
+Once activated, install all dependencies (optional):
 ```shell
 pip3 install -r requirements.txt
 
@@ -31,7 +31,7 @@ FLASK_CONFIG=DEV
 FLASK_ENV=development
 FLASK_DEBUG=1
 FLASK_RUN_PORT=8080
-FLAS_RUN_HOST=0.0.0.0
+FLASK_RUN_HOST=0.0.0.0
 
 # Pinecone api key
 PINECONE_API_KEY=YOUR_API_KEY
@@ -43,6 +43,6 @@ OPENAI_API_KEY=YOUR_API_KEY
 
 Run the app!
 ```
-flask run
+npm run dev
 
 ```
