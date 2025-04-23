@@ -10,17 +10,7 @@ npm i
 ### Python virtual environment
 
 ```shell
-python3 -m venv venv
-```
-
-```shell
-source venv/bin/activate
-```
-
-Once activated, install all dependencies (optional):
-```shell
-pip3 install -r requirements.txt
-
+npm run py-venv
 ```
 
 Create a `.env` and add the following:
