@@ -23,7 +23,7 @@ def openai_chat(f):
 
       if not user_query or not isinstance(user_query, str):
         raise Exception("Invalid user prompt")
-
+      
       chat_response = chat_client.create(user_prompt=user_query)
     except OpenAIClientException as e:
       return jsonify({
