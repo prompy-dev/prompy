@@ -1,5 +1,5 @@
 from flask import request, g, jsonify
-from services.OpenAIClient import OpenAIChatClient, OpenAIClientException
+from app.services.OpenAIClient import OpenAIChatClient, OpenAIClientException
 from functools import wraps
 
 chat_client = OpenAIChatClient(model='gpt-4o', config={
