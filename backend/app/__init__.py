@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, g
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
-from controllers.openai_controller import openai_bp
+from controllers.openai_controller import openai_chat
 
 load_dotenv()
 
@@ -11,13 +11,20 @@ def create_app(config_class=None):
   app.config.from_object(config_class)
   CORS(app)
 
-  # controllers
-  app.register_blueprint(openai_bp)
-
   @app.get('/')
   @cross_origin()
   def index():
     return jsonify({ 'success': True })
+  
+
+  @app.post('/api/chat')
+  @cross_origin()
+  @openai_chat
+  def prompy_entry():
+    return jsonify({ 
+      'success': True,
+      'chat_response': g.chat_response
+    })
   
   @app.get('/error')
   def spoof_error():

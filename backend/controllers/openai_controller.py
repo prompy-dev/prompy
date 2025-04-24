@@ -1,38 +1,38 @@
-from flask import Blueprint, request, jsonify
-from openai import OpenAI
-import os
+from flask import request, g, jsonify
+from services.OpenAIClient import OpenAIChatClient, OpenAIClientException
+from functools import wraps
 
+chat_client = OpenAIChatClient(model='gpt-4o', config={
+  "temperature": 0.7,
+  "top_p": 1.0,
+  "max_tokens": 256,
+  "presence_penalty": 0.0,
+  "frequency_penalty": 0.0,
+})
 
-openai_bp = Blueprint("openai", __name__)
-
-client = OpenAI(
-  api_key=os.environ.get("OPEN_API_KEY")
+chat_client.set_system_prompt(
+  prompt='You are my best friend'
 )
 
-@openai_bp.post("/chat")
-def chat():
-  try:
+def openai_chat(f):
+  @wraps(f)
+  def wrapper(*args, **kwargs):
+    try:
+      data = request.get_json()
+      user_query = data['prompt']
 
-    data = request.get_json()
-    user_query = data['prompt']
+      if not user_query or not isinstance(user_query, str):
+        raise Exception("Invalid user prompt")
 
-    response = client.chat.completions.create(
-      model="gpt-4o",
-      messages=[
-        {
-          "role": "system",
-          "content": 'You are a coding assistant that talks like a pirate.'
-        },
-        {
-          "role": "user",
-          "content": user_query
-        }
-      ]
-    )
-
-    chat_response = response.choices[0].message.content
-
-    return jsonify({"response": chat_response})
-
-  except Exception as e:
-    print(e)
+      chat_response = chat_client.create(user_prompt=user_query)
+    except OpenAIClientException as e:
+      return jsonify({
+        'success': False,
+        'error': e.message
+      })
+    else:
+      print('USER QUERY ========', user_query)
+      g.user_prompt = user_query
+      g.chat_response = chat_response
+      return f(*args, **kwargs)
+  return wrapper
