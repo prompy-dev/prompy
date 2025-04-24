@@ -1,13 +1,14 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
+import { Providers } from './providers';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Prompy - AI Prompt Feedback',
-  description: 'Get expert feedback on your AI prompts',
+  title: 'Prompy - AI Prompt Writing Coach',
+  description: 'Get feedback and improve your AI prompts with Prompy, your personal prompt writing coach',
 };
 
 export default function RootLayout({
@@ -18,9 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <Providers>
           {children}
-        </ThemeProvider>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
