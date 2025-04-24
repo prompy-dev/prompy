@@ -59,6 +59,8 @@ class OpenAIChatClient:
           model=self.model,
           messages=self.messages,
           **self.config
+
+
       )
 
       chat_response = api_response.choices[0].message.content
