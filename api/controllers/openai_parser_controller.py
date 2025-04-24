@@ -1,27 +1,8 @@
 from flask import request, g, jsonify
-from app.services.OpenAIClient import OpenAIChatClient, OpenAIClientException
 from functools import wraps
-
-chat_client = OpenAIChatClient(model='gpt-4o', config={
-  "temperature": 0.7,
-  "top_p": 1.0,
-  "max_tokens": 256,
-  "presence_penalty": 0.0,
-  "frequency_penalty": 0.0,
-}, prediction={
-  "type": "content",
-  "content": """
-    class ParsedUserQuery {
-      userQuery: string = "";
-      task: boolean = false;
-      role: boolean = false;
-      context: boolean = false;
-      rules: boolean = false;
-      examples: boolean = false;
-      format: boolean = false;
-    }
-    """
-})
+import json
+from openai import OpenAI
+client = OpenAI()
 
 system_prompt = """
 You will return a JSON object with the following attributes:
@@ -36,9 +17,19 @@ You will return a JSON object with the following attributes:
 You should always respond in JSON format.
 """
 
-chat_client.set_system_prompt(
-  prompt=system_prompt
-)
+code = """
+class UserQuery {
+  userQuery: string = "";
+  task: boolean = false;
+  role: boolean = false;
+  context: boolean = false;
+  rules: boolean = false;
+  examples: boolean = false;
+  format: boolean = false;
+}
+
+export default UserQuery;
+"""
 
 
 def openai_parser(f):
@@ -48,17 +39,34 @@ def openai_parser(f):
       data = request.get_json()
       user_query = data['prompt']
 
-      parsed_user_query_response = chat_client.create(user_prompt=user_query)
+      completion = client.chat.completions.create(
+          model="gpt-4.1",
+          messages=[
+              {
+                  "role": "system",
+                  "content": system_prompt
+              },
+              {
+                  "role": "user",
+                  "content": user_query
+              }
+          ],
+          prediction={
+              "type": "content",
+              "content": code
+          }
+      )
+      print(completion.choices[0].message.content)
 
-      print('PARSED USER QUERY ========', parsed_user_query_response)
+      parsed_data = completion.choices[0].message.content
 
-      if parsed_user_query_response is None:
+      # Parse the JSON string into a Python dictionary
+      parsed_data = json.loads(parsed_data)
+
+      if parsed_data is None:
         raise Exception("parsed user query response is not available")
-      
-      if not isinstance(parsed_user_query_response, dict):
-        raise Exception("parsed user query response is not a dictionary")
 
-      g.parsed_user_query = parsed_user_query_response
+      g.parsed_user_query = parsed_data
 
       return f(*args, **kwargs)
     except Exception as e:

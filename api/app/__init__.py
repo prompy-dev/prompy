@@ -22,11 +22,10 @@ def create_app(config_class=None):
   @cross_origin()
   @check_user_query
   @openai_parser
-  @openai_chat
   def prompy_entry():
     return jsonify({ 
       'success': True,
-      'chat_response': g.chat_response
+      'parsed_user_query': g.parsed_user_query
     })
   
   @app.get('/error')
