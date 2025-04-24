@@ -2,7 +2,7 @@ from flask import Flask, jsonify, abort, g
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from controllers.openai_controller import openai_chat
-
+from controllers.user_query_controller import check_user_query
 load_dotenv()
 
 # create app factory
@@ -19,6 +19,7 @@ def create_app(config_class=None):
 
   @app.post('/api/chat')
   @cross_origin()
+  @check_user_query
   @openai_chat
   def prompy_entry():
     return jsonify({ 
