@@ -26,7 +26,7 @@ class OpenAIChatClient:
     messages (list): The history of messages used in the chat session.
   """
 
-  def __init__(self, model, config):
+  def __init__(self, model, config, prediction=None):
     """
     Initializes the chat client with the given model and config.
 
@@ -36,6 +36,7 @@ class OpenAIChatClient:
     """
     self.model = model
     self.config = config
+    self.prediction = prediction
     self.client = OpenAI(api_key=os.environ.get("OPEN_API_KEY"))
     self.messages = []
 
