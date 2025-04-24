@@ -1,22 +1,37 @@
-"use client";
-
-import { ScanSearch } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { MessageCircle } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="flex items-center mr-4 space-x-2">
-          <ScanSearch className="h-6 w-6" />
-          <span className="font-bold text-lg">prompy</span>
-        </div>
-        
-        <div className="flex flex-1 items-center justify-end">
-          <nav className="flex items-center space-x-1">
-            <ThemeToggle />
-          </nav>
-        </div>
+    <header className="border-b bg-white">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/prompy.svg" alt="Prompy Logo" width={50} height={50} />
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#61dcfb] to-blue-500 bg-clip-text text-transparent">
+            Prompy
+          </h1>
+        </Link>
+        <nav className="hidden md:flex items-center gap-6">
+          <Link
+            href="/"
+            className="text-sm font-medium hover:text-[#61dcfb] transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            href="#"
+            className="text-sm font-medium hover:text-[#61dcfb] transition-colors"
+          >
+            Examples
+          </Link>
+          <Link
+            href="#"
+            className="text-sm font-medium hover:text-[#61dcfb] transition-colors"
+          >
+            Guide
+          </Link>
+        </nav>
       </div>
     </header>
   );
