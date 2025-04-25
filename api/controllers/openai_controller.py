@@ -31,7 +31,6 @@ def openai_chat(f):
         'error': e.message
       })
     else:
-      print('USER QUERY ========', user_query)
       g.user_prompt = user_query
       g.chat_response = chat_response
       return f(*args, **kwargs)
