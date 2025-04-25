@@ -38,3 +38,6 @@ __pycache__
 
 #vscode
 .vscode
+
+# python virtual env
+venv
