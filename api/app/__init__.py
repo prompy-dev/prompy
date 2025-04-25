@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, abort, g
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
-from controllers.openai_controller import openai_chat
+# from controllers.openai_controller import openai_chat
 from controllers.user_query_controller import check_user_query
 from controllers.openai_parser_controller import openai_parser
+from controllers.prompt_scoring_controller import prompt_scoring
 load_dotenv()
 
 # create app factory
@@ -22,10 +23,18 @@ def create_app(config_class=None):
   @cross_origin()
   @check_user_query
   @openai_parser
+  @prompt_scoring
   def prompy_entry():
     return jsonify({ 
       'success': True,
-      'parsed_user_query': g.parsed_user_query
+      'parsed_user_query': g.parsed_user_query,
+      'score_by_field': g.score_by_field,
+      'scores_summary': {
+      'total_score': g.total_score,
+      'max_possible_score': g.max_possible_score,
+      'percentage_score': g.percentage_score,
+      }
+
     })
   
   @app.get('/error')

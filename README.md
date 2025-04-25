@@ -1,5 +1,5 @@
 # Prompy
-### An interactive prompt coach for learning.
+## An interactive prompt coach for learning
 
 ## Setup Instructions
 
@@ -48,7 +48,7 @@
 4. **Environment Configuration**
 
    Create a `.env` file in the project root and add the following:
-   ```
+   ```shell
    # Flask configuration
    FLASK_APP=app
    FLASK_CONFIG=DEV
@@ -89,7 +89,7 @@
    
    The Flask API will be available at: http://localhost:8080
 
-## Troubleshooting
+### Troubleshooting
 
 - If you encounter issues with the virtual environment, try removing the `venv` directory and creating it again:
   ```shell

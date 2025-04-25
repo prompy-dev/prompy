@@ -5,13 +5,13 @@ from app.services.OpenAIClient import OpenAIChatClient, OpenAIClientException
 
 code = """
 class UserQuery {
-  userQuery: string = "";
-  task: boolean = false;
-  role: boolean = false;
-  context: boolean = false;
-  rules: boolean = false;
-  examples: boolean = false;
-  format: boolean = false;
+userQuery: string = "";
+task: boolean = false;
+role: boolean = false;
+context: boolean = false;
+rules: boolean = false;
+examples: boolean = false;
+format: boolean = false;
 }
 
 export default UserQuery;
@@ -31,42 +31,42 @@ You should always respond in JSON format.
 """
 
 chat_client = OpenAIChatClient(model='gpt-4.1', config={
-  "temperature": 0.7,
-  "top_p": 1.0,
-  "max_tokens": 256,
-  "presence_penalty": 0.0,
-  "frequency_penalty": 0.0,
-  "prediction": {
+"temperature": 0.7,
+"top_p": 1.0,
+"max_tokens": 256,
+"presence_penalty": 0.0,
+"frequency_penalty": 0.0,
+"prediction": {
     "type": "content",
     "content": code
-  }
+}
 })
 
 chat_client.set_system_prompt(
-  prompt=system_prompt
+prompt=system_prompt
 )
 
 def openai_parser(f):
-  @wraps(f)
-  def wrapper(*args, **kwargs):
-    try:
-      data = request.get_json()
-      user_query = data['prompt']
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:            
+            data = request.get_json()
+            user_query = data['prompt']
 
-      chat_response = chat_client.create(user_prompt=user_query)
+            chat_response = chat_client.create(user_prompt=user_query)
 
-      # Parse the JSON string into a Python dictionary
-      parsed_data = json.loads(chat_response)
+            # Parse the JSON string into a Python dictionary
+            parsed_data = json.loads(chat_response)
 
-      if parsed_data is None:
-        raise Exception("parsed user query response is not available")
+            if parsed_data is None:
+                raise Exception("parsed user query response is not available")
+            parsed_data['word_count'] = len(user_query.split())
+            g.parsed_user_query = parsed_data
 
-      g.parsed_user_query = parsed_data
-
-      return f(*args, **kwargs)
-    except Exception as e:
-      return jsonify({
-        'success': False,
-        'error': str(e)
-      }), 400
-  return wrapper
+            return f(*args, **kwargs)
+        except OpenAIClientException as e:
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 400
+    return wrapper
