@@ -1,14 +1,14 @@
 import os
+from flask import current_app
 import json
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
 
 from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
-    PromptTemplate,
 )
-from langchain_core.runnables import RunnableMap, RunnableLambda
+from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser
 
@@ -67,6 +67,16 @@ def handle_exception(d: dict):
     return {"parsed_response": parse_response}
 
 
+def log_repsonse(res):
+    current_app.logger.debug("ParseUserQuery", res)
+
+
+def handle_response(chat_response):
+    log_repsonse(chat_response)
+    parsed_response = json.loads(chat_response)
+    return {"parsed_response": parsed_response}
+
+
 def parse_query() -> RunnableSequence:
     prompt = ChatPromptTemplate(
         [
@@ -79,6 +89,6 @@ def parse_query() -> RunnableSequence:
         prompt
         | llm
         | StrOutputParser()
-        | (lambda chat_response: {"parsed_response": json.loads(chat_response)})
+        | RunnableLambda(lambda chat_response: handle_response(chat_response))
         | RunnableLambda(lambda query: handle_exception(query))
     )

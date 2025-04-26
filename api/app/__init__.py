@@ -1,29 +1,17 @@
-from flask import Flask, jsonify, g, request
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 
-from steps.chat_llm import chat_llm
-from steps.user_query import clean_user_query
-from steps.parse_query import parse_query
-
-# langchain
-# from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-
-# from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, PromptTemplate
-# from langchain_core.runnables import RunnableMap, RunnableLambda
-from langchain_core.runnables import RunnableSequence
-
-# from langchain_core.output_parsers import StrOutputParser
-
 load_dotenv()
+
+# Pipeline steps
+from steps import clean_user_query, parse_query, embed_query, chat_llm
+
 
 # create app factory
 def create_app(config_class=None):
     app = Flask(__name__, instance_relative_config=False)
     app.config.from_object(config_class)
-
-    # initialize db extensions
-    # db.init_app(app)
 
     CORS(app)
 
@@ -34,14 +22,20 @@ def create_app(config_class=None):
             data = request.get_json()
             query = data["prompt"]
 
-            pipeline_chain = clean_user_query() | parse_query() | chat_llm()
+            pipeline_chain = (
+                clean_user_query() | parse_query() | embed_query() | chat_llm()
+            )
 
             result = pipeline_chain.invoke({"input": query})
 
-        except:
-            return error_response()
+        except Exception as e:
+            return error_response(
+                  message="Error running pipeline chain",
+                  error_type="Failed Pipeline",
+                  status_code=500
+                )
         else:
-            return jsonify({"success": True, "recommendation": result})
+            return jsonify({"success": True, "": result})
 
     def error_response(message, status_code=400, error_type="Bad Request"):
         return (
