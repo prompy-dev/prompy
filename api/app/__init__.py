@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
-
 load_dotenv()
 
 # Pipeline steps
