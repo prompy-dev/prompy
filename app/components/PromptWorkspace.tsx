@@ -5,15 +5,17 @@ import { PromptPanel } from '@/components/PromptPanel';
 import { FeedbackPanel } from '@/components/FeedbackPanel';
 import { PromptHistory } from '@/components/PromptHistory';
 import { usePromptHistory } from '@/hooks/usePromptHistory';
-import { mockAnalyzePrompt } from '@/lib/mockApi';
+import { submitPrompt } from '@/lib/submitPrompt';
 import { toast } from '@/hooks/use-toast';
-import { PromptFeedback } from '@/lib/types';
+import { ChatResponse } from '@/lib/types';
 
 export function PromptWorkspace() {
   const [prompt, setPrompt] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [feedback, setFeedback] = useState<PromptFeedback | null>(null);
-  const { history, addToHistory, removeFromHistory, clearHistory } = usePromptHistory();
+  const [feedback, setFeedback] = useState<ChatResponse | null>(null);
+  const [showFeedbackOnMobile, setShowFeedbackOnMobile] = useState(false);
+  const { history, addToHistory, removeFromHistory, clearHistory } =
+    usePromptHistory();
 
   const handleAnalyzePrompt = async () => {
     if (!prompt.trim()) {
@@ -27,20 +29,20 @@ export function PromptWorkspace() {
 
     setIsAnalyzing(true);
     setFeedback(null);
+    setShowFeedbackOnMobile(true);
 
     try {
-      // Simulate API call with our mock
-      const result = await mockAnalyzePrompt(prompt);
+      const result = await submitPrompt(prompt);
       setFeedback(result);
-      
+
       // Add to history
       addToHistory({
         id: Date.now().toString(),
         prompt,
-        feedback: result,
+        feedback: result as any, // Temporary fix until we update the history type
         timestamp: new Date().toISOString(),
       });
-      
+
       toast({
         title: 'Analysis complete',
         description: 'Your prompt has been analyzed!',
@@ -51,6 +53,7 @@ export function PromptWorkspace() {
         description: 'Failed to analyze prompt. Please try again.',
         variant: 'destructive',
       });
+      console.error('Error submitting prompt:', error);
     } finally {
       setIsAnalyzing(false);
     }
@@ -59,26 +62,53 @@ export function PromptWorkspace() {
   const handleClearPrompt = () => {
     setPrompt('');
     setFeedback(null);
+    setShowFeedbackOnMobile(false);
   };
 
   const handleLoadFromHistory = (historyItem: any) => {
     setPrompt(historyItem.prompt);
     setFeedback(historyItem.feedback);
+    setShowFeedbackOnMobile(true);
+  };
+
+  const handleBackToPrompt = () => {
+    setShowFeedbackOnMobile(false);
+  };
+
+  const handleBackToFeedback = () => {
+    setShowFeedbackOnMobile(true);
   };
 
   return (
     <div className="flex flex-col space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PromptPanel
-          prompt={prompt}
-          onChange={setPrompt}
-          onAnalyze={handleAnalyzePrompt}
-          onClear={handleClearPrompt}
-          isAnalyzing={isAnalyzing}
-        />
-        <FeedbackPanel feedback={feedback} isLoading={isAnalyzing} />
+        <div
+          className={`${
+            isAnalyzing || showFeedbackOnMobile ? 'hidden md:block' : 'block'
+          }`}
+        >
+          <PromptPanel
+            prompt={prompt}
+            onChange={setPrompt}
+            onAnalyze={handleAnalyzePrompt}
+            onClear={handleClearPrompt}
+            isAnalyzing={isAnalyzing}
+            onBack={feedback ? handleBackToFeedback : undefined}
+          />
+        </div>
+        <div
+          className={`${
+            isAnalyzing || showFeedbackOnMobile ? 'block' : 'hidden md:block'
+          }`}
+        >
+          <FeedbackPanel
+            feedback={feedback}
+            isLoading={isAnalyzing}
+            onBack={handleBackToPrompt}
+          />
+        </div>
       </div>
-      
+
       <PromptHistory
         history={history}
         onSelect={handleLoadFromHistory}

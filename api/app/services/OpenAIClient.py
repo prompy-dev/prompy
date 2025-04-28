@@ -36,7 +36,7 @@ class OpenAIChatClient:
     """
     self.model = model
     self.config = config
-    self.client = OpenAI(api_key=os.environ.get("OPEN_API_KEY"))
+    self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     self.messages = []
 
   def create(self, user_prompt):
@@ -117,7 +117,7 @@ class OpenAIEmbeddingClient:
     Args:
       model (str): The model used to create embeddings.
     """
-    self.client = OpenAI(api_key=os.environ.get("OPEN_API_KEY"))
+    self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     self.model = model
 
   def create(self, input: str):

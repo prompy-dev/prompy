@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, g
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from controllers.openai_controller import openai_chat
+from controllers.prompy_system_controller import prompy_system_test
 from controllers.user_query_controller import check_user_query
 from controllers.openai_parser_controller import openai_parser
 load_dotenv()
@@ -27,6 +28,14 @@ def create_app(config_class=None):
       'success': True,
       'parsed_user_query': g.parsed_user_query
     })
+  
+  @app.post('/api/test')
+  @prompy_system_test
+  def prompy_response():
+     return jsonify({ 
+       'success': True,
+       'chat_response': g.chat_response
+     })
   
   @app.get('/error')
   def spoof_error():
