@@ -1,3 +1,8 @@
+/**
+ * @fileoverview PromptWorkspace component
+ * @description Main workspace component for prompt analysis and feedback
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -9,6 +14,11 @@ import { submitPrompt } from '@/lib/submitPrompt';
 import { toast } from '@/hooks/use-toast';
 import { ChatResponse } from '@/lib/types';
 
+/**
+ * PromptWorkspace component
+ * @description Main component that handles prompt analysis, feedback display, and history management
+ * @returns {JSX.Element} The workspace layout with prompt input, feedback, and history sections
+ */
 export function PromptWorkspace() {
   const [prompt, setPrompt] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -17,6 +27,11 @@ export function PromptWorkspace() {
   const { history, addToHistory, removeFromHistory, clearHistory } =
     usePromptHistory();
 
+  /**
+   * Handles the prompt analysis process
+   * @async
+   * @returns {Promise<void>}
+   */
   const handleAnalyzePrompt = async () => {
     if (!prompt.trim()) {
       toast({
@@ -59,22 +74,35 @@ export function PromptWorkspace() {
     }
   };
 
+  /**
+   * Clears the current prompt and feedback
+   */
   const handleClearPrompt = () => {
     setPrompt('');
     setFeedback(null);
     setShowFeedbackOnMobile(false);
   };
 
+  /**
+   * Loads a prompt from history
+   * @param {Object} historyItem - The history item to load
+   */
   const handleLoadFromHistory = (historyItem: any) => {
     setPrompt(historyItem.prompt);
     setFeedback(historyItem.feedback);
     setShowFeedbackOnMobile(true);
   };
 
+  /**
+   * Returns to the prompt input view
+   */
   const handleBackToPrompt = () => {
     setShowFeedbackOnMobile(false);
   };
 
+  /**
+   * Returns to the feedback view
+   */
   const handleBackToFeedback = () => {
     setShowFeedbackOnMobile(true);
   };

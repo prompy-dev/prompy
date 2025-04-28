@@ -43,4 +43,4 @@ prompt: |
     ],
     "tags": ["storytelling", "creative writing"]
   }
-  Do not execute the prompt. Only respond with valid JSON
+  Do not execute the prompt. Only respond with valid JSON.
