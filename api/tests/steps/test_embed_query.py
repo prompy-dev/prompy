@@ -1,5 +1,3 @@
-import pytest
-from unittest.mock import patch, MagicMock
 from langchain_core.runnables import RunnableLambda
 
 from api.steps.embed_query import embed_query

@@ -34,4 +34,4 @@ class TestParseQuery:
         # Verify the runnable has the expected structure
         assert hasattr(runnable, "invoke")
         assert hasattr(runnable, "batch")
-        assert isinstance(runnable, RunnableSequence) 
+        assert isinstance(runnable, RunnableSequence)
