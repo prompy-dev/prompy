@@ -68,7 +68,9 @@ def _score(d: dict):
           "score_by_field": score_by_field,
       }
 
-      return {"score_breakdown": scores, "parsed_response": parsed_user_query}
+      # Only add new data to the dictionary, preserving existing keys
+      d["score_breakdown"] = scores
+      return d
     
     except Exception as e:
         current_app.logger.exception(e)

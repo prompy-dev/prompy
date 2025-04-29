@@ -47,8 +47,8 @@ def _construct_summary(parsed_response: dict) -> str:
     
     return summary
 
-def summarize_query() -> RunnableLambda:
-    return RunnableLambda(lambda input: _summarize(input))
+def summarize_query():
+    return RunnableLambda(_summarize)
 
 def _summarize(d: dict):
     try:
@@ -66,9 +66,11 @@ def _summarize(d: dict):
             raise Exception("Missing 'user_query' in parsed_response")
 
         summary = _construct_summary(parsed_response)
+
+        d["summary"] = summary
+
+        return d
         
     except Exception as e:
         raise Exception(f"SummarizeQueryException: {str(e)}")
-    else:
-        log_response(summary)
-        return {"summary": summary, "parsed_response": parsed_response}
+    
