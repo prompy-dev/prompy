@@ -31,6 +31,21 @@ To run tests with verbose output:
 pytest -v api/tests
 ```
 
+### Running Tests with NPM Scripts
+
+You can also run tests using NPM scripts from the root directory:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with verbose output
+npm run test:verbose
+
+# Run tests in watch mode (automatically re-run on file changes)
+npm run test:watch
+```
+
 ## Testing Approach for LangChain Runnables
 
 1. **Structure Tests**: Verify that the runnable has the expected structure and interfaces.
@@ -147,12 +162,3 @@ def test_chain_flow():
     # Assert on final output
     assert result == expected_output
 ```
-
-## Next Steps
-
-To expand the test suite:
-
-1. Add more comprehensive tests for each runnable
-2. Implement integration tests between connected runnables
-3. Add performance testing for critical chains
-4. Create fixtures that simulate realistic user inputs 
