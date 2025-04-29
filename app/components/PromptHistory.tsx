@@ -47,8 +47,8 @@ export function PromptHistory({
       <Card className="shadow-sm border-[#61dcfb]/10">
         <CardHeader className="py-3 px-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <span className="text-[#61dcfb]">🕒</span> Prompt History
+            <CardTitle className="text-xl font-walter-turncoat flex items-center gap-2">
+              Prompt History
             </CardTitle>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -61,13 +61,13 @@ export function PromptHistory({
             </CollapsibleTrigger>
           </div>
         </CardHeader>
-        
+
         <CollapsibleContent>
           <CardContent className="px-4 pt-0 pb-3">
             {history.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2">
                 {history.map((item) => (
-                  <PromptItem 
+                  <PromptItem
                     key={item.id}
                     item={item}
                     onSelect={() => onSelect(item)}
@@ -78,17 +78,18 @@ export function PromptHistory({
             ) : (
               <Alert variant="default" className="bg-muted/50 border-muted">
                 <AlertDescription className="text-sm text-muted-foreground text-center py-2">
-                  Your prompt history will appear here after you analyze prompts.
+                  Your prompt history will appear here after you analyze
+                  prompts.
                 </AlertDescription>
               </Alert>
             )}
           </CardContent>
-          
+
           {history.length > 0 && (
             <CardFooter className="px-4 pt-0 pb-3 flex justify-end">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="text-muted-foreground hover:text-destructive hover:border-destructive"
                 onClick={handleClearAll}
               >

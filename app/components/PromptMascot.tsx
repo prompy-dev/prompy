@@ -7,25 +7,20 @@ interface PromptMascotProps {
 }
 
 export function PromptMascot({ isAnimating = false }: PromptMascotProps) {
+  const imgSrc = isAnimating ? '/prompy-thinking.png' : '/prompy-basic.png';
 
   return (
     <div className="relative w-25 h-25">
-      {/* Mascot placeholder - this will be replaced with an actual image */}
-      {/* <div
+      <Image
+        src={imgSrc}
+        alt="Prompy Logo"
+        width={200}
+        height={200}
+        priority={true}
         className={`
-          w-24 h-24 bg-[#61dcfb] rounded-full flex items-center justify-center
-          ${isAnimating ? 'animate-pulse' : ''}
-          transition-all duration-300 ease-in-out
-          shadow-lg hover:shadow-xl
-        `}
-      > */}
-        <Image
-          src="/prompy.svg"
-          alt="Prompy Logo"
-          width={200}
-          height={200}
-        />
-      {/* </div> */}
+            ${isAnimating ? 'animate-rotate' : ''}
+          `}
+      />
 
       {/* Dots for thinking animation */}
       {isAnimating && (
