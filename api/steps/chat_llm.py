@@ -1,6 +1,8 @@
 import os
 import yaml
 from langchain_openai import ChatOpenAI
+import pathlib
+from langchain_core.runnables import RunnableLambda
 
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -10,8 +12,12 @@ from langchain_core.prompts import (
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser
 
+# Get absolute path to config directory
+base_dir = pathlib.Path(__file__).parent.parent
+config_path = os.path.join(base_dir, 'config', 'system_prompt.yaml')
+
 # Load system prompt from YAML
-with open('../config/system_prompt.yaml') as file:
+with open(config_path) as file:
     config = yaml.safe_load(file)
     system_prompt = config['prompt']
     variables = config.get('variables', {})
@@ -22,7 +28,26 @@ llm = ChatOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
+def transform_input(input_dict):
+    """Transform the input dictionary to expose the right variables to the template."""
+    # Create a copy so we don't modify the original
+    transformed = input_dict.copy()
+    
+    # Add the needed variables
+    transformed["documents"] = input_dict.get("context", "")
+    
+    # Extract score from score_breakdown
+    if "score_breakdown" in input_dict and "percentage_score" in input_dict["score_breakdown"]:
+        transformed["score"] = round(input_dict["score_breakdown"]["percentage_score"] / 10)
+    else:
+        transformed["score"] = 0
+        
+    return transformed
+
 def chat_llm() -> RunnableSequence:
+    # First transform the input to have the right variables
+    transform_step = RunnableLambda(transform_input)
+    
     prompt = ChatPromptTemplate(
         [
             SystemMessagePromptTemplate.from_template(system_prompt),
@@ -30,18 +55,10 @@ def chat_llm() -> RunnableSequence:
         ]
     )
 
-    # Create a chain that includes the variables
-    chain = prompt | llm | StrOutputParser()
+    # Create a chain
+    llm_chain = prompt | llm | StrOutputParser()
     
-    # Add variables to the chain with the provided score and documents
-    chain = chain.with_config({
-        "configurable": {
-            "variables": {
-                **variables,
-                "score": "{round(score_breakdown.percentage_score / 10)}",
-                "documents": "{pinecone_documents}" #fix later to use the documents from pinecone
-            }
-        }
-    })
+    # Combine transform and llm chain
+    full_chain = transform_step | llm_chain
     
-    return chain
+    return full_chain

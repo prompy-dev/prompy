@@ -23,10 +23,6 @@ def _query_pinecone(d: dict):
         if parsed_response is None:
             raise Exception("Missing 'parsed_response' in input dictionary")
 
-        # Log the environment variables (without the actual API key)
-        current_app.logger.debug(f"PINECONE_INDEX_NAME: {os.environ.get('PINECONE_INDEX_NAME')}")
-        current_app.logger.debug(f"PINECONE_API_KEY present: {bool(os.environ.get('PINECONE_API_KEY'))}")
-
         # Initialize Pinecone client using the new API
         pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
         
@@ -36,7 +32,7 @@ def _query_pinecone(d: dict):
         # Query Pinecone directly with the embedding
         query_response = index.query(
             vector=embedding,
-            top_k=3,
+            top_k=5,
             include_metadata=True
         )
         
