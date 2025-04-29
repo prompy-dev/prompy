@@ -5,6 +5,7 @@ from .user_query import clean_user_query
 from .pinecone import pinecone_query
 from .score_query import score_query
 from .db_query import db_query
+from .summarize_query import summarize_query
 
 __all__ = [
     "chat_llm",
@@ -13,5 +14,6 @@ __all__ = [
     "clean_user_query",
     "pinecone_query",
     "score_query",
-    "db_query"
+    "db_query",
+    "summarize_query"
 ]

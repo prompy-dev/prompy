@@ -43,3 +43,6 @@ __pycache__
 venv/
 env/
 .venv/
+
+# Package manager
+yarn.lock

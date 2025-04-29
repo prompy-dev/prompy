@@ -20,15 +20,15 @@ def embed_query() -> RunnableLambda:
 def _embed(d: dict):
     try:
         parsed_response = d.get("parsed_response")
+        summary = d.get("summary")
 
         if "user_query" not in parsed_response:
             raise Exception("EmbedUserQueryException")
 
-        q = parsed_response.get("user_query")
+        vector = embeddings.embed_query(summary)
 
-        vector = embeddings.embed_query(q)
+        d["embedding"] = vector
+
+        return d
     except:
         raise Exception("EmbedUserQueryException")
-    else:
-        log_repsonse(vector)
-        return {"embedding": vector, "parsed_response": parsed_response}
