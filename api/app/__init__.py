@@ -1,73 +1,55 @@
-from flask import Flask, jsonify, abort, g
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
-from controllers.prompy_system_controller import prompy_system_test
-from controllers.user_query_controller import check_user_query
-from controllers.openai_parser_controller import openai_parser
-from controllers.prompt_scoring_controller import prompt_scoring
 load_dotenv()
+
+# Pipeline steps
+from steps import clean_user_query, parse_query, embed_query, chat_llm
+
 
 # create app factory
 def create_app(config_class=None):
-  app = Flask(__name__, instance_relative_config=False)
-  app.config.from_object(config_class)
-  CORS(app)
+    app = Flask(__name__, instance_relative_config=False)
+    app.config.from_object(config_class)
 
-  @app.get('/')
-  @cross_origin()
-  def index():
-    return jsonify({ 'success': True })
-  
+    CORS(app)
 
-  @app.post('/api/chat')
-  @cross_origin()
-  @check_user_query
-  @openai_parser
-  @prompt_scoring
-  def prompy_entry():
-    return jsonify({ 
-      'success': True,
-      'parsed_user_query': g.parsed_user_query,
-      'score_by_field': g.score_by_field,
-      'scores_summary': {
-      'total_score': g.total_score,
-      'max_possible_score': g.max_possible_score,
-      'percentage_score': g.percentage_score,
-      }
+    @app.post("/api/chat")
+    @cross_origin()
+    def recommendation():
+        try:
+            data = request.get_json()
+            query = data["prompt"]
 
-    })
-  
-  @app.post('/api/test')
-  @prompy_system_test
-  def prompy_response():
-     return jsonify({ 
-       'success': True,
-       'chat_response': g.chat_response
-     })
-  
-  @app.get('/error')
-  def spoof_error():
-    abort(500)
+            pipeline_chain = (
+                clean_user_query() | parse_query() | embed_query() | chat_llm()
+            )
 
-  @app.errorhandler(500)
-  def server_errror(error):
-    return error_response(
-      message="There was an error processing the request",
-      status_code=500,
-      error_type="Server Error"
-    )
-  
-  def error_response(message, status_code=400, error_type="Bad Request"):
-    return jsonify({
-      "sucess": False,
-      "message": message,
-      "error": error_type
-    }), status_code
-  
-  @app.after_request
-  def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-    return response
+            result = pipeline_chain.invoke({"input": query})
 
-  return app
+        except Exception as e:
+            return error_response(
+                  message="Error running pipeline chain",
+                  error_type="Failed Pipeline",
+                  status_code=500
+                )
+        else:
+            return jsonify({"success": True, "": result})
+
+    def error_response(message, status_code=400, error_type="Bad Request"):
+        return (
+            jsonify({"sucess": False, "message": message, "error": error_type}),
+            status_code,
+        )
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type, Authorization"
+        )
+        response.headers.add(
+            "Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS"
+        )
+        return response
+
+    return app
