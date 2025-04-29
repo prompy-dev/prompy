@@ -1,0 +1,11 @@
+-- Subject to change, just needed something to query
+CREATE TABLE user_query (
+  id SERIAL PRIMARY KEY,
+  user_query TEXT NOT NULL,
+  task BOOLEAN NOT NULL DEFAULT FALSE,
+  role BOOLEAN NOT NULL DEFAULT FALSE,
+  context BOOLEAN NOT NULL DEFAULT FALSE,
+  rules BOOLEAN NOT NULL DEFAULT FALSE,
+  examples BOOLEAN NOT NULL DEFAULT FALSE,
+  format BOOLEAN NOT NULL DEFAULT FALSE
+);
