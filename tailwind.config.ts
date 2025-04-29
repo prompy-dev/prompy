@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'walter-turncoat': ['var(--font-walter-turncoat)'],
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -78,10 +81,18 @@ const config: Config = {
             height: '0',
           },
         },
+        rotate: {
+          '0%': { transform: 'rotate(-15deg)' },
+          '25%': { transform: 'rotate(0deg)' },
+          '50%': { transform: 'rotate(15deg)' },
+          '75%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(-15deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        rotate: 'rotate 1500ms infinite',
       },
     },
   },
