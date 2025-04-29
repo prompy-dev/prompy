@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export async function submitPrompt(prompt: string): Promise<ChatResponse> {
   try {
-    const response = await fetch(`${API_URL}/api/test`, {
+    const response = await fetch(`${API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
