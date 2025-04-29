@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
+from flask_talisman import Talisman
 load_dotenv()
 
 # Pipeline steps
@@ -13,6 +14,21 @@ def create_app(config_class=None):
     app.config.from_object(config_class)
 
     CORS(app)
+
+    # Configure Talisman with security headers
+    Talisman(
+        app,
+        force_https=True,
+        strict_transport_security=True,
+        session_cookie_secure=True,
+        content_security_policy={
+            'default-src': "'self'",
+            'script-src': "'self'",
+            'style-src': "'self'",
+            'img-src': "'self'",
+            'connect-src': "'self'"
+        }
+    )
 
     @app.post("/api/chat")
     @cross_origin()
