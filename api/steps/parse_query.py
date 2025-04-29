@@ -67,13 +67,15 @@ def handle_exception(d: dict):
     return {"parsed_response": parse_response}
 
 
-def log_repsonse(res):
-    current_app.logger.debug("ParseUserQuery", res)
-
-
 def handle_response(chat_response):
-    log_repsonse(chat_response)
     parsed_response = json.loads(chat_response)
+
+    user_query = parsed_response.get("user_query")
+
+    if parsed_response is None or user_query is None:
+        raise Exception("parsed user query response is not available")
+    parsed_response['word_count'] = len(user_query.split())
+
     return {"parsed_response": parsed_response}
 
 
