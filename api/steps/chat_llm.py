@@ -1,4 +1,5 @@
 import os
+import yaml
 from langchain_openai import ChatOpenAI
 
 from langchain_core.prompts import (
@@ -9,36 +10,38 @@ from langchain_core.prompts import (
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser
 
+# Load system prompt from YAML
+with open('../config/system_prompt.yaml') as file:
+    config = yaml.safe_load(file)
+    system_prompt = config['prompt']
+    variables = config.get('variables', {})
 
 llm = ChatOpenAI(
     model="gpt-4",
     temperature=0.7,
-    api_key=os.environ.get("OPEN_API_KEY"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
 )
-
-
-system_prompt = """
-    You are a prompt analysis assistant. Your task is to review and evaluate the effectiveness of a given prompt. For each prompt provided, provide the following analysis:
-    1. **Clarity**: Is the prompt clear and easy to understand? If not, suggest improvements.
-    2. **Focus**: Does the prompt clearly define the task and scope? If there's ambiguity, point it out and suggest a clearer focus.
-    3. **Context**: Does the prompt provide adequate background or context for the task? If more context is needed, specify what should be added.
-    4. **Tone and Role**: Does the prompt set the correct tone and define the assistant's role appropriately? If the tone is inconsistent or the role isn't clear, provide suggestions.
-    5. **Conciseness**: Is the prompt brief yet comprehensive? If the prompt is too long or vague, suggest ways to make it more concise while maintaining clarity.
-    Provide a detailed report with examples of potential improvements for each section.
-"""
-
 
 def chat_llm() -> RunnableSequence:
     prompt = ChatPromptTemplate(
         [
             SystemMessagePromptTemplate.from_template(system_prompt),
-            HumanMessagePromptTemplate.from_template(
-                """
-                Analyze the user query prompt:
-              {parsed_response}
-              """
-            ),
+            HumanMessagePromptTemplate.from_template("{parsed_response}"),
         ]
     )
 
-    return prompt | llm | StrOutputParser()
+    # Create a chain that includes the variables
+    chain = prompt | llm | StrOutputParser()
+    
+    # Add variables to the chain with the provided score and documents
+    chain = chain.with_config({
+        "configurable": {
+            "variables": {
+                **variables,
+                "score": "{round(score_breakdown.percentage_score / 10)}",
+                "documents": "{pinecone_documents}" #fix later to use the documents from pinecone
+            }
+        }
+    })
+    
+    return chain
