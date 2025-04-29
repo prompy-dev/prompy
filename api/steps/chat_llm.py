@@ -22,7 +22,7 @@ llm = ChatOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
-def chat_llm(score: int, documents: list[str]) -> RunnableSequence:
+def chat_llm() -> RunnableSequence:
     prompt = ChatPromptTemplate(
         [
             SystemMessagePromptTemplate.from_template(system_prompt),
@@ -38,8 +38,8 @@ def chat_llm(score: int, documents: list[str]) -> RunnableSequence:
         "configurable": {
             "variables": {
                 **variables,
-                "score": score,
-                "documents": documents
+                "score": "{round(score_breakdown.percentage_score / 10)}",
+                "documents": "{pinecone_documents}" #fix later to use the documents from pinecone
             }
         }
     })
