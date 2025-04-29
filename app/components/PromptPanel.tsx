@@ -28,6 +28,11 @@ export function PromptPanel({
   isAnalyzing,
   onBack,
 }: PromptPanelProps) {
+  // Character count to prevent exceeding 1000 characters
+  const charCount = prompt.length;
+  const isWarning = charCount > 800 && charCount <= 1000;
+  const isError = charCount > 1000;
+
   return (
     <Card className="h-fit shadow-md border-[#61dcfb]/20 transition-all">
       <CardHeader className="relative">
@@ -52,6 +57,22 @@ export function PromptPanel({
           onChange={(e) => onChange(e.target.value)}
           disabled={isAnalyzing}
         />
+        <div
+          className={`mt-2 text-sm ${
+            isWarning
+              ? 'text-orange-500'
+              : isError
+              ? 'text-red-500'
+              : 'text-gray-500'
+          }`}
+        >
+          {charCount > 800 && (
+            <span>
+              {charCount}/1000 characters
+              {isError && ' - Maximum character limit exceeded'}
+            </span>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between gap-2">
         <Button
@@ -65,7 +86,7 @@ export function PromptPanel({
         </Button>
         <Button
           onClick={onAnalyze}
-          disabled={isAnalyzing || !prompt.trim()}
+          disabled={isAnalyzing || !prompt.trim() || isError}
           size="sm"
           className="bg-[#61dcfb] hover:bg-[#61dcfb]/90 text-white"
         >
