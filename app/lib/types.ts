@@ -14,8 +14,8 @@ export interface HistoryItem {
 }
 
 export interface PromptResponse {
-  chat_response: ChatResponse;
-  isSuccess: boolean;
+  success: boolean;
+  feedback: ChatResponse;
 }
 
 export interface ChatResponse {
