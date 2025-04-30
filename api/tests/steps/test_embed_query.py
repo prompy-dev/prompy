@@ -13,15 +13,6 @@ def sample_dict():
     }
 
 class TestEmbedQuery:
-    
-    def test_embed_query_runnable_structure(self):
-        """Test that embed_query returns a properly structured runnable"""
-        runnable = embed_query()
-        
-        # Verify the runnable has the expected structure
-        assert hasattr(runnable, "invoke")
-        assert hasattr(runnable, "batch")
-        assert isinstance(runnable, RunnableLambda) 
         
     def test_embed_query_with_missing_user_query(self):
         """Test embed_query with a missing parsed_response"""

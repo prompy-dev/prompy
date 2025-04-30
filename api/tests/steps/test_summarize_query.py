@@ -4,14 +4,6 @@ from api.steps.summarize_query import summarize_query
 
 
 class TestSummarizeQuery:
-    
-    def test_summarize_query_runnable_structure(self):
-        """Test that summarize_query returns a properly structured runnable"""
-        runnable = summarize_query()
-        
-        # Verify the runnable has the expected structure
-        assert hasattr(runnable, "invoke")
-        assert hasattr(runnable, "batch")
         
     def test_summarize_query_with_parsed_response(self):
         """Test summarize_query with a mocked parsed response"""

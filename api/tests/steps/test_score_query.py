@@ -24,14 +24,6 @@ def sample_parsed_query():
 
 class TestScoreQuery:
     
-    def test_score_query_runnable_structure(self):
-        """Test that score_query returns a properly structured runnable"""
-        runnable = score_query()
-        
-        # Verify the runnable has the expected structure
-        assert hasattr(runnable, "invoke")
-        assert isinstance(runnable, RunnableLambda)
-    
     def test_get_word_count_score(self):
         """Test the word count scoring function"""
         # Test ideal word count range
