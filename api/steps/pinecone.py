@@ -32,7 +32,7 @@ def _query_pinecone(d: dict):
         # Query Pinecone directly with the embedding
         query_response = index.query(
             vector=embedding,
-            top_k=5,
+            top_k=3,
             include_metadata=True
         )
         

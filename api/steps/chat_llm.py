@@ -1,42 +1,47 @@
 import os
+import json
 import yaml
-from langchain_openai import ChatOpenAI
+from typing import Dict, Any
 import pathlib
-from langchain_core.runnables import RunnableLambda
-
+from flask import current_app
+from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnableLambda, RunnableSequence
 from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain_core.runnables import RunnableSequence
-from langchain_core.output_parsers import StrOutputParser
 
-# Get absolute path to config directory
-base_dir = pathlib.Path(__file__).parent.parent
-config_path = os.path.join(base_dir, 'config', 'system_prompt.yaml')
+# Constants
+BASE_DIR = pathlib.Path(__file__).parent.parent
+CONFIG_PATH = os.path.join(BASE_DIR, 'config', 'system_prompt.yaml')
 
-# Load system prompt from YAML
-with open(config_path) as file:
-    config = yaml.safe_load(file)
-    system_prompt = config['prompt']
-    variables = config.get('variables', {})
+def load_config() -> tuple[str, Dict[str, Any]]:
+    """Load system prompt and variables from YAML config file."""
+    with open(CONFIG_PATH) as file:
+        config = yaml.safe_load(file)
+        return config['prompt'], config.get('variables', {})
 
-llm = ChatOpenAI(
-    model="gpt-4",
-    temperature=0.7,
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
+def log_response(response: str) -> None:
+    """Log the response content for debugging purposes."""
+    current_app.logger.debug(response)
 
-def transform_input(input_dict):
-    """Transform the input dictionary to expose the right variables to the template."""
-    # Create a copy so we don't modify the original
+def transform_input(input_dict: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Transform the input dictionary to expose the right variables to the template.
+    
+    Args:
+        input_dict: Dictionary containing input data
+        
+    Returns:
+        Transformed dictionary with required variables
+    """
     transformed = input_dict.copy()
     
-    # Add the needed variables
+    # Add documents from context
     transformed["documents"] = input_dict.get("context", "")
     
-    # Extract score from score_breakdown
+    # Extract and normalize score
     if "score_breakdown" in input_dict and "percentage_score" in input_dict["score_breakdown"]:
         transformed["score"] = round(input_dict["score_breakdown"]["percentage_score"] / 10)
     else:
@@ -44,21 +49,74 @@ def transform_input(input_dict):
         
     return transformed
 
-def chat_llm() -> RunnableSequence:
-    # First transform the input to have the right variables
-    transform_step = RunnableLambda(transform_input)
+def format_llm_response(input_dict: Dict[str, Any], response: str) -> Dict[str, Any]:
+    """
+    Format the LLM response into a structured dictionary.
     
+    Args:
+        input_dict: Original input dictionary
+        response: Raw response from LLM
+        
+    Returns:
+        Dictionary containing formatted response data
+    """
+    try:
+        parsed_response = json.loads(response)
+    except json.JSONDecodeError:
+        current_app.logger.error("Failed to parse LLM response as JSON")
+        parsed_response = {
+            "strengths": [],
+            "improvements": [],
+            "tags": []
+        }
+    
+    return {
+        "score": input_dict.get("score", 0),
+        "strengths": parsed_response.get("strengths", []),
+        "improvements": parsed_response.get("improvements", []),
+        "tags": parsed_response.get("tags", [])
+    }
+
+def chat_llm() -> RunnableSequence:
+    """
+    Create a chat LLM chain for processing and formatting responses.
+    
+    Returns:
+        RunnableSequence combining input transformation and LLM processing
+    """
+    # Load configuration
+    system_prompt, _ = load_config()
+    
+    # Initialize LLM
+    llm = ChatOpenAI(
+        model="gpt-4",
+        temperature=0.7,
+        api_key=os.environ.get("OPENAI_API_KEY"),
+    )
+    
+    # Create prompt template
     prompt = ChatPromptTemplate(
         [
             SystemMessagePromptTemplate.from_template(system_prompt),
             HumanMessagePromptTemplate.from_template("{parsed_response}"),
         ]
     )
-
-    # Create a chain
-    llm_chain = prompt | llm | StrOutputParser()
     
-    # Combine transform and llm chain
+    # Create processing chain
+    def process_response(input_dict: Dict[str, Any]) -> Dict[str, Any]:
+        # Format messages
+        formatted_prompt = prompt.format_messages(**input_dict)
+
+        # Get LLM response
+        response = llm.invoke(formatted_prompt)
+
+        
+        # Format and return response
+        return format_llm_response(input_dict, response.content)
+    
+    # Combine transform and processing steps
+    transform_step = RunnableLambda(transform_input)
+    llm_chain = RunnableLambda(process_response)
     full_chain = transform_step | llm_chain
     
     return full_chain

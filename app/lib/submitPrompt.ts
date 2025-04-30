@@ -1,4 +1,4 @@
-import { ChatResponse } from './types';
+import { ChatResponse, PromptResponse } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -16,8 +16,13 @@ export async function submitPrompt(prompt: string): Promise<ChatResponse> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    const chatResponse = JSON.parse(data.chat_response);
+    const data: PromptResponse = await response.json();
+
+    if (!data.success) {
+      throw new Error('Request was not successful');
+    }
+
+    const chatResponse = data.feedback;
 
     // Validate the response structure
     if (
@@ -31,7 +36,7 @@ export async function submitPrompt(prompt: string): Promise<ChatResponse> {
       );
     }
 
-    return chatResponse as ChatResponse;
+    return chatResponse;
   } catch (error) {
     console.error('Error sending prompt to OpenAI:', error);
     throw error;
