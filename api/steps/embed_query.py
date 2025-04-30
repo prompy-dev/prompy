@@ -5,11 +5,11 @@ from langchain_core.runnables import RunnableLambda
 
 
 embeddings = OpenAIEmbeddings(
-    model="text-embedding-3-small", api_key=os.environ.get("OPEN_API_KEY")
+    model="text-embedding-3-small", api_key=os.environ.get("OPENAI_API_KEY")
 )
 
 
-def log_repsonse(res):
+def log_response(res):
     current_app.logger.debug(res)
 
 

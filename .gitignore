@@ -46,3 +46,6 @@ env/
 
 # Package manager
 yarn.lock
+
+# pytest cache
+.pytest_cache/

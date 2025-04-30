@@ -2,6 +2,8 @@ from flask import Flask, current_app, jsonify, request
 from dotenv import load_dotenv
 from flask_cors import CORS, cross_origin
 from flask_talisman import Talisman
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 load_dotenv()
 
 # Pipeline steps
@@ -24,6 +26,13 @@ def create_app(config_class=None):
 
     CORS(app)
 
+    # Initialize rate limiter
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
+
     # Configure Talisman with security headers
     Talisman(
         app,
@@ -41,6 +50,7 @@ def create_app(config_class=None):
 
     @app.post("/api/chat")
     @cross_origin()
+    @limiter.limit("10 per minute")  # More specific limit for the chat endpoint
     def recommendation():
         try:
             data = request.get_json()

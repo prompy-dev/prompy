@@ -16,14 +16,14 @@ from langchain_core.output_parsers import StrOutputParser
 llm = ChatOpenAI(
     model="gpt-4",
     temperature=0.7,
-    api_key=os.environ.get("OPEN_API_KEY"),
+    api_key=os.environ.get("OPENAI_API_KEY"),
     top_p=1.0,
     # prediction ?
 )
 
 code = """
   {{
-    "user_uery": string;
+    "user_query": string;
     "task": boolean;
     "role": boolean;
     "context": boolean;
