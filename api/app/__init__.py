@@ -13,7 +13,7 @@ from steps import (
   score_query,
   pinecone_query,
   summarize_query,
-  db_query
+  run_query
 )
 
 
@@ -51,7 +51,7 @@ def create_app(config_class=None):
                 | parse_query()
                 | summarize_query()
                 | score_query()
-                | db_query()
+                | run_query()
                 | embed_query()
                 | pinecone_query()
                 | chat_llm()
