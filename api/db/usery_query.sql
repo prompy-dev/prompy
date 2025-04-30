@@ -9,3 +9,19 @@ CREATE TABLE user_query (
   examples BOOLEAN NOT NULL DEFAULT FALSE,
   format BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+
+CREATE TABLE scores (
+  id SERIAL PRIMARY KEY,
+  total_score FLOAT,
+  max_possible_score INTEGER,
+  percentage_score FLOAT,
+  task_score INTEGER,
+  role_score INTEGER,
+  context_score INTEGER,
+  rules_score INTEGER,
+  examples_score INTEGER,
+  format_score INTEGER,
+  word_count_score FLOAT,
+  user_query_id INTEGER REFERENCES user_query(id)
+);

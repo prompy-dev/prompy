@@ -12,8 +12,10 @@ from steps import (
   chat_llm, 
   score_query,
   pinecone_query,
-  summarize_query
+  summarize_query,
+  db_query
 )
+
 
 # create app factory
 def create_app(config_class=None):
@@ -49,6 +51,7 @@ def create_app(config_class=None):
                 | parse_query()
                 | summarize_query()
                 | score_query()
+                | db_query()
                 | embed_query()
                 | pinecone_query()
                 | chat_llm()
