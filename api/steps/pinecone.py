@@ -12,8 +12,6 @@ def pinecone_query():
 
 def _query_pinecone(d: dict):
     try:
-        if not isinstance(d, dict):
-            raise Exception(f"Expected dict input, got {type(d)}")
             
         embedding = d.get("embedding")
         if embedding is None:

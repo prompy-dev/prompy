@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch
 
 from api.steps.summarize_query import summarize_query
 
@@ -33,8 +32,6 @@ class TestSummarizeQuery:
         
         # Run the summarize query
         result = runnable.invoke(mock_input)
-        
-        print(result)
         
         # Verify the summary was added to the dictionary
         assert "summary" in result
