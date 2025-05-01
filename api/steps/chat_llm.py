@@ -51,6 +51,7 @@ def transform_input(input_dict: Dict[str, Any]) -> Dict[str, Any]:
     return transformed
 
 def format_llm_response(input_dict: Dict[str, Any], response: str) -> Dict[str, Any]:
+    user_query_version_id = input_dict.get("user_query_version_id")
     """
     Format the LLM response into a structured dictionary.
     
@@ -75,7 +76,8 @@ def format_llm_response(input_dict: Dict[str, Any], response: str) -> Dict[str, 
         "score": input_dict.get("score", 0),
         "strengths": parsed_response.get("strengths", []),
         "improvements": parsed_response.get("improvements", []),
-        "tags": parsed_response.get("tags", [])
+        "tags": parsed_response.get("tags", []),
+        "versionId": user_query_version_id
     }
 
 def chat_llm() -> RunnableSequence:
@@ -115,7 +117,6 @@ def chat_llm() -> RunnableSequence:
 
         # Get LLM response
         response = llm.invoke(formatted_prompt)
-
         
         # Format and return response
         return format_llm_response(input_dict, response.content)

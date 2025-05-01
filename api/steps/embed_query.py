@@ -30,5 +30,5 @@ def _embed(d: dict):
         d["embedding"] = vector
 
         return d
-    except:
-        raise Exception("EmbedUserQueryException")
+    except Exception as e:
+        raise Exception(f"EmbedUserQueryException: {e}")

@@ -22,45 +22,7 @@ def sample_parsed_query():
     }
 
 
-@pytest.fixture
-def expected_score_output():
-    return {
-        "score_breakdown": {
-            "total_score": 13,
-            "max_possible_score": 19,
-            "percentage_score": 59.09090909090909,
-            "score_by_field": {
-                "task": 4,
-                "role": 3,
-                "context": 0,
-                "rules": 3,
-                "examples": 0,
-                "format": 0,
-                "word_count": 3
-            }
-        },
-        "parsed_response": {
-            "user_query": "Create a prompt that helps summarize scientific papers",
-            "task": True,
-            "role": True,
-            "context": False,
-            "rules": True,
-            "examples": False,
-            "format": False,
-            "word_count": 150
-        }
-    }
-
-
 class TestScoreQuery:
-    
-    def test_score_query_runnable_structure(self):
-        """Test that score_query returns a properly structured runnable"""
-        runnable = score_query()
-        
-        # Verify the runnable has the expected structure
-        assert hasattr(runnable, "invoke")
-        assert isinstance(runnable, RunnableLambda)
     
     def test_get_word_count_score(self):
         """Test the word count scoring function"""

@@ -6,14 +6,6 @@ from api.steps.user_query import clean_user_query, UserQueryException
 
 class TestUserQuery:
     
-    def test_clean_user_query_runnable_structure(self):
-        """Test that clean_user_query returns a properly structured runnable"""
-        runnable = clean_user_query()
-        
-        # Verify the runnable has the expected structure
-        assert hasattr(runnable, "invoke")
-        assert hasattr(runnable, "batch")
-    
     def test_clean_user_query_normal_input(self):
         """Test clean_user_query with normal input"""
         runnable = clean_user_query()

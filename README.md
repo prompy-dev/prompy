@@ -62,6 +62,9 @@
 
    # OpenAI api key
    OPENAI_API_KEY=YOUR_API_KEY
+
+   # Supabase api key
+   SUPABASE_URI=YOUR_API_KEY
    ```
    
    Make sure to replace `YOUR_API_KEY` with your actual API keys for Pinecone and OpenAI.
