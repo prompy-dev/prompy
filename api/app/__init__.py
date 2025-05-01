@@ -14,8 +14,11 @@ from steps import (
   chat_llm, 
   score_query,
   pinecone_query,
-  summarize_query
+  summarize_query,
+  run_query,
+  query_feedback
 )
+
 
 # create app factory
 def create_app(config_class=None):
@@ -59,9 +62,11 @@ def create_app(config_class=None):
                 | parse_query()
                 | summarize_query()
                 | score_query()
+                | run_query()
                 | embed_query()
                 | pinecone_query()
                 | chat_llm()
+                | query_feedback()
             )
 
             result = pipeline_chain.invoke({"input": query})
