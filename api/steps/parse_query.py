@@ -12,9 +12,13 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser
 
+# Get model ID from environment variable or use default
+# To use a fine-tuned model, set PARSE_QUERY_MODEL_ID environment variable to your model ID
+# Example: export PARSE_QUERY_MODEL_ID="ft:gpt-3.5-turbo-0613:organization:custom-suffix:random-id"
+model_id = os.environ.get("PARSE_QUERY_MODEL_ID", "gpt-4")
 
 llm = ChatOpenAI(
-    model="gpt-4",
+    model=model_id,
     temperature=0.7,
     api_key=os.environ.get("OPENAI_API_KEY"),
     top_p=1.0,

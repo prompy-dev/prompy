@@ -11,6 +11,7 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
+from langchain_core.output_parsers import StrOutputParser
 
 # Constants
 BASE_DIR = pathlib.Path(__file__).parent.parent
@@ -89,9 +90,14 @@ def chat_llm() -> RunnableSequence:
     # Load configuration
     system_prompt, _ = load_config()
     
+    # Get model ID from environment variable or use default
+    # To use a fine-tuned model, set OPENAI_MODEL_ID environment variable to your model ID
+    # Example: export OPENAI_MODEL_ID="ft:gpt-3.5-turbo-0613:organization:custom-suffix:random-id"
+    model_id = os.environ.get("OPENAI_MODEL_ID", "gpt-4")
+    
     # Initialize LLM
     llm = ChatOpenAI(
-        model="gpt-4",
+        model=model_id,
         temperature=0.7,
         api_key=os.environ.get("OPENAI_API_KEY"),
     )

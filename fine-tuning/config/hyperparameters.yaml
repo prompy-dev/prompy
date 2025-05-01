@@ -1,0 +1,28 @@
+# Fine-tuning hyperparameters
+
+# Base model to fine-tune
+model:
+  name: "gpt-3.5-turbo" # Options: gpt-3.5-turbo, gpt-4-turbo, etc.
+  version: "1106" # Updated to a currently supported version
+
+# Training parameters
+training:
+  n_epochs: 3 # Number of epochs to train for
+  batch_size: 8 # Batch size for training
+  learning_rate_multiplier: 0.1 # Learning rate multiplier
+
+# Dataset parameters
+dataset:
+  training_file: "train.jsonl" # Name of training file in data directory
+  validation_file: "validation.jsonl" # Name of validation file in data directory
+  validation_split: 0.1 # Percentage of data to use for validation if separate file not provided
+
+# OpenAI API parameters (set these via environment variables in production)
+openai:
+  api_key_env_var: "OPENAI_API_KEY" # Name of environment variable for API key
+  organization_env_var: "OPENAI_ORG_ID" # Name of environment variable for organization ID
+
+# Output configuration
+output:
+  suffix: "" # Optional suffix to add to the fine-tuned model name
+  save_dir: "../models" # Directory to save model checkpoints
