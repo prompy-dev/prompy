@@ -15,7 +15,8 @@ from steps import (
   score_query,
   pinecone_query,
   summarize_query,
-  run_query
+  run_query,
+  query_feedback
 )
 
 
@@ -65,6 +66,7 @@ def create_app(config_class=None):
                 | embed_query()
                 | pinecone_query()
                 | chat_llm()
+                | query_feedback()
             )
 
             result = pipeline_chain.invoke({"input": query})

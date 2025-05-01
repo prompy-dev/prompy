@@ -1,7 +1,10 @@
-DROP TABLE IF EXISTS response;
-DROP TABLE IF EXISTS scores;
-DROP TABLE IF EXISTS user_query_version;
-DROP TABLE IF EXISTS user_query;
+----------------------------------------------------------------------
+-- COPY AND PASTE THIS INTO SUPABASE
+----------------------------------------------------------------------
+DROP TABLE IF EXISTS feedback_response CASCADE;
+DROP TABLE IF EXISTS scores CASCADE;
+DROP TABLE IF EXISTS user_query_version CASCADE;
+DROP TABLE IF EXISTS user_query CASCADE;
 
 CREATE TABLE user_query (
   id SERIAL PRIMARY KEY,
@@ -37,10 +40,25 @@ CREATE TABLE scores (
   user_query_version_id INTEGER REFERENCES user_query_version(id)
 );
 
-CREATE TABLE response (
+CREATE TABLE feedback_response (
   id SERIAL PRIMARY KEY,
-  strengths TEXT,
-  improvements TEXT,
+  improvements TEXT[],
+  score INTEGER,
+  strengths TEXT[],
   tags TEXT[],
   user_query_version_id INTEGER REFERENCES user_query_version(id)
 );
+----------------------------------------------------------------------
+-- END
+----------------------------------------------------------------------
+
+
+
+-- Example query to get full data set
+SELECT
+  *
+FROM
+  user_query u
+  JOIN user_query_version v ON u.id = v.user_query_id
+  JOIN scores s ON s.user_query_version_id = v.id
+  JOIN feedback_response f ON f.user_query_version_id = v.id
