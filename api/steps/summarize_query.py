@@ -6,8 +6,6 @@ def log_response(res):
 
 def _construct_summary(parsed_response: dict) -> str:
     """Constructs a natural language summary from the parsed response."""
-    if not isinstance(parsed_response, dict):
-        raise Exception(f"Expected dict, got {type(parsed_response)}")
     
     user_query = parsed_response.get("user_query", "")
     if not user_query:
@@ -52,8 +50,6 @@ def summarize_query():
 
 def _summarize(d: dict):
     try:
-        if not isinstance(d, dict):
-            raise Exception(f"Expected dict input, got {type(d)}")
             
         parsed_response = d.get("parsed_response")
         if parsed_response is None:

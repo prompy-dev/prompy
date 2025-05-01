@@ -11,9 +11,9 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"test": "python -m pytest api/tests",
-		"test:verbose": "python -m pytest -v api/tests",
-		"test:watch": "python -m pytest -v api/tests --watch"
+		"test": "python -m pytest -s api/tests",
+		"test:verbose": "python -m pytest -v -s api/tests",
+		"test:watch": "python -m pytest -v -s api/tests --watch"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.0",
