@@ -1,0 +1,26 @@
+# Ignore model files
+/models/*
+!models/.gitkeep
+
+# Ignore environment-specific files
+.env
+*.env
+
+# Ignore large datasets
+/data/*.jsonl
+/data/*.json
+/data/*.csv
+/data/*.txt
+/data/*.tsv
+# Don't ignore sample data or small example files
+!data/sample_*.jsonl
+!data/example_*.jsonl
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore logs
+*.log
+/logs/ 
